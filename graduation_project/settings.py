@@ -126,3 +126,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# 静态访问目录
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, '/var/www/hmtl'),
+)
+
+# 上传文件目录
+FileUploadDir = 'static/imgs/upload'
