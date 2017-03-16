@@ -21,8 +21,8 @@ from hosts import views
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^hosts/', include(hosts_urls)),
-    url(r'^$', views.index),
-    url(r'^hosts/', include(hosts_urls)),
+    url(r'^$', views.index, name='dashboard'),
+    url(r'^hosts/', include(hosts_urls), name='hosts'),
 
     url(r"^assets$", views.assets_index, name='assets'),
     url(r"^monitor$", views.monitor_index, name='monitor'),
