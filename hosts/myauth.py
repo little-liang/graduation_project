@@ -69,10 +69,14 @@ class UserProfile(AbstractBaseUser):
 
     memo = models.TextField(u'备注', blank=True, null=True, default=None)
     date_joined = models.DateTimeField(blank=True, auto_now_add=True)
-    valid_begin_time = models.DateTimeField(default=django.utils.timezone.now)
-    valid_end_time = models.DateTimeField(blank=True,null=True)
 
-    groups = models.ManyToManyField
+    host_groups = models.ManyToManyField("HostGroup", blank=True)
+    bind_hosts = models.ManyToManyField('BindHostToUser', blank=True)
+
+    valid_begin_time = models.DateTimeField(default=django.utils.timezone.now)
+    valid_end_time = models.DateTimeField(blank=True, null=True)
+
+
 
 
     #email当作用户名

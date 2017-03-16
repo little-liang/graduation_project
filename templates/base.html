@@ -31,7 +31,7 @@
           </button>
             <a class="navbar-brand" href="#">SOcioQqu</a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
+        <div id="navbar_menu" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
               <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
               <li><a href="{% url 'hosts' %}">主机</a></li>
@@ -66,13 +66,11 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
+        <div id="side_bar_menu" class="col-sm-3 col-md-2 sidebar">
             {% block sidebar %}
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="http://v3.bootcss.com/examples/dashboard/#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="http://v3.bootcss.com/examples/dashboard/#">Reports</a></li>
-            <li><a href="http://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
-            <li><a href="http://v3.bootcss.com/examples/dashboard/#">Export</a></li>
+            <li class="active"><a href="http://v3.bootcss.com/examples/dashboard/#">xxxx<span class="sr-only">(current)</span></a></li>
+
           </ul>
             {% endblock %}
         </div>
@@ -111,5 +109,17 @@
     <script src="/static/js/jquery-3.1.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
 
+    {% block bottom-js %}
+    {% endblock %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#navbar_menu a[href='{{ request.path }}']").parent().addClass("active");
+            $("#side_bar_menu a[href='{{ request.path }}']").parent().addClass("active");
+
+        });//end doc ready
+
+    </script>
 
   </body></html>

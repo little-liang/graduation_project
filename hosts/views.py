@@ -44,3 +44,10 @@ def acc_logout(request):
     logout(request)
 
     return HttpResponseRedirect("/")
+
+
+def hosts_mgr(request):
+    return render(request, 'hosts/host_mgr.html')
+
+def multi_cmd(request):
+    return render(request, 'hosts/multi_cmd.html')

@@ -1,9 +1,25 @@
 {% extends 'base.html' %}
 
 {% block sidebar%}
-
+    <ul class="nav nav-sidebar">
+    <li><a href="{% url 'host_mgr' %}">主机<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'multi_cmd' %}">批量命令</a></li>
+    <li><a href="#">文件分发</a></li>
+    <li><a href="#">任务计划</a></li>
+    <li><a href="#">审计</a></li>
+    </ul>
 {% endblock %}
 
 {% block content_panel %}
     hosts
+{% endblock %}
+
+{% block bottom-js %}
+    <script>
+        $(document).ready(function () {
+
+            //这个界面是二级界面 自己带 active
+            $("#navbar_menu a[href='"+ "{% url 'hosts' %}" +"']").parent().addClass("active");
+        });
+    </script>
 {% endblock %}
