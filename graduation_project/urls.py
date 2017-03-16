@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^hosts/', include(hosts_urls)),
     url(r'^$', views.index, name='dashboard'),
     url(r'^hosts/', include(hosts_urls), name='hosts'),
+    url(r'^login/', views.acc_login, name='login'),
+    url(r'^logout/', views.acc_logout, name='logout'),
 
     url(r"^assets$", views.assets_index, name='assets'),
     url(r"^monitor$", views.monitor_index, name='monitor'),

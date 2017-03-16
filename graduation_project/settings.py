@@ -135,3 +135,7 @@ STATICFILES_DIRS = (
 
 # 上传文件目录
 FileUploadDir = 'static/imgs/upload'
+
+
+#未登录时自动转入这个URL
+LOGIN_URL = '/login/'

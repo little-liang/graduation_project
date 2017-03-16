@@ -41,9 +41,9 @@
 
           <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Dropdown <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ request.user.name }}<span class="caret"></span></a>
                   <ul class="dropdown-menu">
-                    <li><a href="#">Logout</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
                     <li><a href="#">xxxxxx</a></li>
                     <li><a href="#">xxxxxxx</a></li>
                     <li role="separator" class="divider"></li>
@@ -67,14 +67,17 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
+            {% block sidebar %}
           <ul class="nav nav-sidebar">
             <li class="active"><a href="http://v3.bootcss.com/examples/dashboard/#">Overview <span class="sr-only">(current)</span></a></li>
             <li><a href="http://v3.bootcss.com/examples/dashboard/#">Reports</a></li>
             <li><a href="http://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
             <li><a href="http://v3.bootcss.com/examples/dashboard/#">Export</a></li>
           </ul>
+            {% endblock %}
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block content_panel %}
           <h1 class="page-header">Dashboard</h1>
 
           <div class="row placeholders">
@@ -97,6 +100,7 @@
           </div>
 
           <h2 class="sub-header">Section title</h2>
+            {% endblock %}
         </div>
       </div>
     </div>

@@ -75,19 +75,20 @@ class UserProfileAdmin(UserAdmin):
     list_display = ('id', 'email', 'is_admin', 'is_active', 'name', 'department')
     list_filter = ('is_admin', 'date_joined', 'department')
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('department', 'tel', 'mobile', 'memo')}),
-        ('API TOKEN info', {'fields': ('token',)}),
-        ('Permissions', {'fields': ('is_active', 'is_admin')}),
+        # ('name', {'fields': ('email', )}),
+        # (None, {'fields': ('name', 'password')}),
+        ('账户密码管理', {'fields': ('email', 'password')}),
+        ('个人信息列表', {'fields': ('name', 'department', 'tel', 'mobile', 'memo')}),
+        ('API TOKEN 信息', {'fields': ('token',)}),
+        ('权限信息', {'fields': ('is_active', 'is_admin')}),
         ('账户有效期', {'fields': ('valid_begin_time', 'valid_end_time')}),
-        ('显示名字：备注', {'fields': ('memo',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email',  'password1', 'password2','is_active','is_admin')}
+            'fields': ('email',  'password1', 'password2', 'is_active', 'is_admin')}
         ),
     )
     search_fields = ('email', 'department')
