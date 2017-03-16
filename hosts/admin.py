@@ -12,19 +12,24 @@ class HostAdmin(admin.ModelAdmin):
     search_fields = ('hostname', 'ip_addr',)
 
     #过滤机制
-    list_filter = ('system_type', 'idc')
+    list_filter = ('system_type', 'idc',)
 
 class HostUserAdmin(admin.ModelAdmin):
-    list_display = ('auth_type', 'username', 'password')
+    list_display = ('auth_type', 'username', 'password',)
 
+class BindHostToUserAdmin(admin.ModelAdmin):
+
+    #这里不能写多对多关系，host_groups就是多对多关系
+    # list_display = ('host', 'host_user', 'host_groups',)
+    list_display = ('host', 'host_user',)
 
 admin.site.register(models.UserProfile, auth_admin.UserProfileAdmin) ##自定制admin，增加了auth_admin.UserAdmin
 
-#上面的class想有效，就帮在后面Hos
+#上面的class想有效，就帮在后面Host --> HostAmin
 admin.site.register(models.Host, HostAdmin)
 admin.site.register(models.HostGroup)
 
 #上面的class想有效，就帮在后面HostUserAdmin
 admin.site.register(models.HostUser, HostUserAdmin)
-admin.site.register(models.BindHostToUser)
+admin.site.register(models.BindHostToUser, BindHostToUserAdmin)
 admin.site.register(models.IDC)
