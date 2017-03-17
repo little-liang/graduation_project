@@ -72,7 +72,7 @@ class UserProfileAdmin(UserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'email', 'is_admin', 'is_active', 'name', 'department')
+    list_display = ('email', 'is_admin', 'is_active', 'name', 'department')
     list_filter = ('is_admin', 'date_joined', 'department')
     fieldsets = (
         # ('name', {'fields': ('email', )}),
@@ -80,6 +80,8 @@ class UserProfileAdmin(UserAdmin):
         ('账户密码管理', {'fields': ('email', 'password')}),
         ('个人信息列表', {'fields': ('name', 'department', 'tel', 'mobile', 'memo')}),
         ('API TOKEN 信息', {'fields': ('token',)}),
+        ('可管理的主机', {'fields': ('bind_hosts',)}),
+        ('可管理的主机组', {'fields': ('host_groups',)}),
         ('权限信息', {'fields': ('is_active', 'is_admin')}),
         ('账户有效期', {'fields': ('valid_begin_time', 'valid_end_time')}),
     )
@@ -93,4 +95,6 @@ class UserProfileAdmin(UserAdmin):
     )
     search_fields = ('email', 'department')
     ordering = ('email',)
-    filter_horizontal = ()
+
+    #非常帅的选择框
+    filter_horizontal = ('bind_hosts', 'host_groups',)

@@ -21,7 +21,15 @@ class BindHostToUserAdmin(admin.ModelAdmin):
 
     #这里不能写多对多关系，host_groups就是多对多关系
     # list_display = ('host', 'host_user', 'host_groups',)
-    list_display = ('host', 'host_user',)
+
+    ##对于多对多关系，用专门的函数方法实现,所以在models中应该有这个函数 def get_groups(self):
+
+    list_display = ('host', 'host_user', 'get_groups')
+    filter_horizontal = ('host_group',)
+
+
+
+
 
 admin.site.register(models.UserProfile, auth_admin.UserProfileAdmin) ##自定制admin，增加了auth_admin.UserAdmin
 

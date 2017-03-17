@@ -71,7 +71,7 @@ class HostUser(models.Model):
 
 class HostGroup(models.Model):
     name = models.CharField(unique=True, max_length=64)
-    memo = models.TextField(blank=True,null=True)
+    memo = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -96,3 +96,7 @@ class BindHostToUser(models.Model):
 
     def __str__(self):
         return "%s:%s" % (self.host.hostname, self.host_user.username)
+
+    #多对多关系不能直接查询出来，给admin使用，做成函数，供给admin
+    def get_groups(self):
+        return ','.join([g.name for g in self.host_group.select_related()])

@@ -1,5 +1,24 @@
 {% extends 'hosts/dashboard.html' %}
 
 {% block content_panel %}
-    主机列表
+   <div class="col-md-3">
+    主机组
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul class="nav">
+                    {% for group in request.user.host_groups.select_related %}
+                        <li class=""><a href="#">{{ group.name }}[{{ group.bindhosttouser_set.select_related.count }}]</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+        <div class="col-md-9">
+        主机列表
+        <div class="panel panel-default">
+            <div class="panel-body">
+            Basic panel example
+            </div>
+        </div>
+    </div>
 {% endblock %}
