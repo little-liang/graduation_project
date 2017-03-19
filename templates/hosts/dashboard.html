@@ -21,6 +21,10 @@
 
             //这个界面是二级界面 自己带 active
             $("#navbar_menu a[href='"+ "{% url 'hosts' %}" +"']").parent().addClass("active");
+            $("#host-group a").click(function () {
+                $(this).addClass("active")
+                $(this).siblings().removeClass("active")
+            });//end host-group a click
         });
     </script>
 {% endblock %}

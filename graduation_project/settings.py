@@ -77,18 +77,27 @@ WSGI_APPLICATION = 'graduation_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql', #数据库类型
+#         'NAME': 's10ops', #数据库名字
+#         'USER': 'test100',
+#         'PASSWORD': 'test100',
+#         'HOST': '192.168.10.122',
+#         'PORT': 3306
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', #数据库类型
         'NAME': 's10ops', #数据库名字
-        'USER': 'test100',
-        'PASSWORD': 'test100',
-        'HOST': '192.168.10.122',
+        'USER': 'root',
+        'PASSWORD': 'Abcd1234',
+        'HOST': 'localhost',
         'PORT': 3306
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 

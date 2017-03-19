@@ -6,8 +6,9 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <ul class="nav">
+                    <li class=""><a href="{% url 'host_mgr' %}?select_gid={{ group.id }}">未分组主机[{{ request.user.bind_hosts.select_related.count }}]</a></li>
                     {% for group in request.user.host_groups.select_related %}
-                        <li class=""><a href="#">{{ group.name }}[{{ group.bindhosttouser_set.select_related.count }}]</a></li>
+                        <li class=""><a href="{% url 'host_mgr' %}?select_gid={{ group.id }}">{{ group.name }}[{{ group.bindhosttouser_set.select_related.count }}]</a></li>
                     {% endfor %}
                 </ul>
             </div>
@@ -17,7 +18,33 @@
         主机列表
         <div class="panel panel-default">
             <div class="panel-body">
-            Basic panel example
+                <table class="table table-bordered">
+                    <tr>
+                            <th>#</th>
+                            <td>Hostname</td>
+                            <td>IP</td>
+                            <td>System type</td>
+                            <td>IDC</td>
+                            <td>Host user</td>
+                            <td>Status</td>
+                            <td>Login</td>
+                    </tr>
+                    {% for h in host_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ h.host.hostname }}</td>
+                        <td>{{ h.host.ip_addr }}</td>
+                        <td>{{ h.host.system_type }}</td>
+                        <td>{{ h.host.idc }}</td>
+                        <td>{{ h.host.port }}</td>
+                        <td>{{ h.host.enabled }}</td>
+                        <td>Login</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+
+
             </div>
         </div>
     </div>

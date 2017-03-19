@@ -116,8 +116,8 @@ class UserProfile(AbstractBaseUser):
         return self.is_admin
 
     class Meta:
-        verbose_name = u'用户信息'
-        verbose_name_plural = u"用户信息"
+        verbose_name = '登录用户信息'
+        verbose_name_plural = "登录用户信息"
 
 
     #这个在Userprofile类下，引用了UserManager类

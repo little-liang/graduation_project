@@ -1,0 +1,36 @@
+.panel-left{
+    margin-left: -30px;
+    margin-right:30px;
+}
+
+.panel-right{
+    margin-left: -40px;
+}
+
+.borderless{
+    border:none;
+}
+
+.a-pointer{
+    cursor: pointer;
+}
+
+.list-tree{
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+}
+
+.list-tree span{
+    color: #ddd;
+    margin-left: -15px;
+}
+
+.list-tree input{
+    width: auto;
+}
+
+.list-group-item input{
+    width: auto;
+}
+

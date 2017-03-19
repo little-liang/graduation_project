@@ -1,5 +1,116 @@
 {% extends 'hosts/dashboard.html' %}
 
 {% block content_panel %}
-    批量命令
+    <div class="col-md-3">
+        <div class="panel panel-default panel-left">
+            主机组
+            <div class="panel-body">
+                <ul id="group-list" class="list-group">
+
+                  <li class="list-group-item borderless">
+                    <span class="badge">{{ request.user.bind_hosts.select_related.count }}</span>
+                    未分组主机
+                  </li>
+
+                  {% for group in request.user.host_groups.select_related  %}
+
+                     <li class="list-group-item borderless">
+                     <input onclick="CheckAllToggle(this)" data="host-group" type="checkbox">
+                       <a data="group" class="a-pointer">
+                           {{ group.name }}
+                         <span class="badge">{{ group.bindhosttouser_set.select_related.count }}</span>
+                       </a>
+
+                     <ul class="list-group">
+                       {% for h in group.bindhosttouser_set.select_related %}
+                         <li class="list-group-item list-tree"><span>-- </span><input data="bind-host" type="checkbox" value="{{ h.id }}">{{ h.host.hostname }}</li>
+                       {% endfor %}
+                     </ul>
+                    </li>
+                  {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="panel panel-default panel-right">
+            <div class="panel-body">
+                <textarea name="cmd" rows="3" placeholder="输入要执行的命令..."></textarea>
+                <hr/>
+                <button type="button" class="btn btn-success col-lg-2 pull-right" onclick="SubmitTask('mutli_cmd')">执行命令</button>
+{#                输入命令为空或者没有选择主机#}
+                <div id="err-msgs"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bottom-js %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+{#            与a同级的所有标签#}
+            $("#group-list a[data='group']").click(function(){
+                $(this).nextAll().toggleClass("hide");
+
+                $("input[data='host-group']")
+            });
+        });//end doc ready
+
+        function CheckAllToggle(ele){
+           if(ele.checked){//把下面的主机全部全选
+               ($(ele).next().next().children().children("input")).prop("checked", true); //attr prop 区别这个不行另一个行
+           }else{ //再点一下取消全选
+               ($(ele).next().next().children().children("input")).prop("checked", false);
+           }
+        }
+
+        function SubmitTask(task_type){
+            console.log(task_type);
+            if(task_type == "mutli_cmd"){
+                FormVerification(task_type);
+            }
+        }
+
+        function FormVerification(task_type){
+            var err_list = [];
+
+            if(task_type == "mutli_cmd"){
+                VerifyHostSelection()
+            }else {
+                selected_host = VerifyHostSelection();
+                var cmd_text = $("textarea[name='cmd']").val();
+                console.log(selected_host, cmd_text);
+                if(selected_host.length == 0) {
+                    err_list.push(['验证失败', '未选择任何主机']);
+                }
+                if(cmd_text.length == 0) {
+                    err_list.push(['验证失败', '未选输入要执行的命令']);
+                }
+            }
+
+            if(err_list.length>0){
+                $("#err-msgs").html(" ");
+                $.each(err_list, function (index, item) {
+                    var err_msg = "<p stype='color:red;'>" + index + ". " + item[1] + "</p>";
+                    $("#err-msgs").append(err_msg);
+
+                })
+            }else{
+                //提交任务
+            }
+        }
+
+        function VerifyHostSelection(){
+            var selected_hosts = [];
+            console.log("ooo11");
+            var all_hosts = $("input[data='bind-host']");
+            $.each(all_hosts, function(index, ele){
+                if(ele.checked){
+                    selected_hosts.push($(ele).val());
+                }
+            });
+            return selected_hosts;
+        }
+    </script>
 {% endblock %}

@@ -15,7 +15,7 @@ class HostAdmin(admin.ModelAdmin):
     list_filter = ('system_type', 'idc',)
 
 class HostUserAdmin(admin.ModelAdmin):
-    list_display = ('auth_type', 'username', 'password',)
+    list_display = ('username', 'password', 'auth_type',)
 
 class BindHostToUserAdmin(admin.ModelAdmin):
 
