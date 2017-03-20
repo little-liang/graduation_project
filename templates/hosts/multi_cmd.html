@@ -66,7 +66,6 @@
         }
 
         function SubmitTask(task_type){
-            console.log(task_type);
             if(task_type == "mutli_cmd"){
                 FormVerification(task_type);
             }
@@ -74,13 +73,15 @@
 
         function FormVerification(task_type){
             var err_list = [];
+            var data_list = {};
 
             if(task_type == "mutli_cmd"){
-                VerifyHostSelection()
-            }else {
-                selected_host = VerifyHostSelection();
-                var cmd_text = $("textarea[name='cmd']").val();
-                console.log(selected_host, cmd_text);
+                var selected_host = VerifyHostSelection();
+                data_list['selected_hosts'] = selected_host;
+                var cmd_text = $.trim($("textarea[name='cmd']").val());
+                data_list['cmd'] = cmd_text;
+                data_list['task_type'] = task_type;
+
                 if(selected_host.length == 0) {
                     err_list.push(['验证失败', '未选择任何主机']);
                 }
@@ -89,23 +90,28 @@
                 }
             }
 
+
             if(err_list.length>0){
                 $("#err-msgs").html(" ");
                 $.each(err_list, function (index, item) {
-                    var err_msg = "<p stype='color:red;'>" + index + ". " + item[1] + "</p>";
+                    var err_msg = "<p style='color: red;'>" + index + ". " + item[1] + "</p>";
                     $("#err-msgs").append(err_msg);
 
-                })
+                });
             }else{
                 //提交任务
+                data_list["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
+                $.post("{% url 'submit_task' %}", data_list, function(callback){
+                    console.log(callback);
+                });
             }
         }
 
         function VerifyHostSelection(){
             var selected_hosts = [];
-            console.log("ooo11");
             var all_hosts = $("input[data='bind-host']");
             $.each(all_hosts, function(index, ele){
+
                 if(ele.checked){
                     selected_hosts.push($(ele).val());
                 }

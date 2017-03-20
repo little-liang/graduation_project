@@ -1,7 +1,7 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from hosts import models
+from hosts import models, task
 # Create your views here.
 
 
@@ -46,7 +46,7 @@ def acc_logout(request):
 
     return HttpResponseRedirect("/")
 
-
+@login_required()
 def hosts_mgr(request):
     #这里用的是?select_gid={{ group.id }}
     select_gid = request.GET.get('select_gid')
@@ -60,5 +60,19 @@ def hosts_mgr(request):
         host_list = request.user.bind_hosts.select_related()
     return render(request, 'hosts/host_mgr.html', {'host_list': host_list})
 
+@login_required()
 def multi_cmd(request):
     return render(request, 'hosts/multi_cmd.html')
+
+@login_required()
+def submit_task(request):
+    # print(request.POST)
+    # print(request.POST.get('cmd'))
+    # print(request.POST.get('task_type'))
+    # print(request.POST.getlist('selected_hosts'))
+
+    #写个类专门处理这个事情
+    tas_obj = task.Task(request)
+    res = tas_obj.handle()
+
+    return HttpResponse("dddd")
