@@ -133,6 +133,7 @@
                 });
             }else{
                 //提交任务
+                $("#err-msgs").html(" ");
                 //因为POST 存在一个跨域访问 得把csrf的值给记下来，提交的时候才让提交
                 data_list["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
 

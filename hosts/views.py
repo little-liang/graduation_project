@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from hosts import models, task
+import json
 # Create your views here.
 
 
@@ -73,4 +74,4 @@ def submit_task(request):
     tas_obj = task.Task(request)
     res = tas_obj.handle()
 
-    return HttpResponse("ok了")
+    return HttpResponse(json.dumps(res))

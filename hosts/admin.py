@@ -57,3 +57,6 @@ admin.site.register(models.HostGroup)
 admin.site.register(models.HostUser, HostUserAdmin)
 admin.site.register(models.BindHostToUser, BindHostToUserAdmin)
 admin.site.register(models.IDC)
+
+admin.site.register(models.TaskLog)
+admin.site.register(models.TaskLogDetail)

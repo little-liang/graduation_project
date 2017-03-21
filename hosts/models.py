@@ -125,3 +125,39 @@ class BindHostToUser(models.Model):
     #多对多关系不能直接查询出来，给admin使用，做成函数，供给admin定制显示使用，
     def get_groups(self):
         return ','.join([g.name for g in self.host_group.select_related()])
+
+class TaskLog(models.Model):
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+    task_type_choices = (('mutli_cmd', "CMD"), ('file_send', "批量发送文件"), ('file_get', "批量下载文件"))
+    task_type = models.CharField(choices=task_type_choices, max_length=50)
+    files_dir = models.CharField("文件上传临时目录", blank=True, null=True, max_length=32)
+    user = models.ForeignKey('UserProfile')
+    hosts = models.ManyToManyField('BindHostToUser')
+    cmd = models.TextField()
+    expire_time = models.IntegerField(default=30)
+    task_pid = models.IntegerField(default=0)
+    note = models.CharField(max_length=100, blank=True, null=True)
+
+    def __str__(self):
+        return "taskid:%s cmd:%s" % (self.id, self.cmd)
+
+    class Meta:
+        verbose_name = '批量任务'
+        verbose_name_plural = '批量任务'
+
+class TaskLogDetail(models.Model):
+    child_of_task = models.ForeignKey('TaskLog')
+    bind_host = models.ForeignKey('BindHostToUser')
+    date = models.DateTimeField(auto_now_add=True)  # finished date
+    event_log = models.TextField()
+    result_choices = (('success', 'Success'), ('failed', 'Failed'), ('unknown', 'Unknown'))
+    result = models.CharField(choices=result_choices, max_length=30, default='unknown')
+    note = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return "child of:%s result:%s" % (self.child_of_task.id, self.result)
+
+    class Meta:
+        verbose_name = '批量任务日志'
+        verbose_name_plural = '批量任务日志'
