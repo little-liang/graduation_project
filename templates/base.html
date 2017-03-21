@@ -1,3 +1,4 @@
+{#所有的前端界面基于base.html bootstrap上下载的做成，包括index#}
 <!DOCTYPE html>
 <html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
@@ -20,65 +21,56 @@
   </head>
 
   <body>
+{#    这里是跨站访问保护，直接写入全局了，使用是要用csrfmiddlewaretoken这个来保证一致性#}
     {% csrf_token %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-            <a class="navbar-brand" href="#">SOcioQqu</a>
-        </div>
         <div id="navbar_menu" class="navbar-collapse collapse">
+
+{#            导航栏#}
           <ul class="nav navbar-nav">
               <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
               <li><a href="{% url 'hosts' %}">主机</a></li>
               <li><a href="{% url 'assets' %}">资产</a></li>
               <li><a href="{% url 'monitor' %}">监控</a></li>
           </ul>
-
+{#            登陆显示用户名，下拉菜单是logout#}
           <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">{{ request.user.name }}<span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li><a href="{% url 'logout' %}">Logout</a></li>
-                    <li><a href="#">xxxxxx</a></li>
-                    <li><a href="#">xxxxxxx</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li class="dropdown-header">xxxxx</li>
-                    <li><a href="#">xxxxx</a></li>
-                    <li><a href="#">xxxxxxxx</a></li>
                   </ul>
               </li>
           </ul>
-
+{#            假的搜索框#}
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
           </form>
-
-
 
         </div>
       </div>
     </nav>
 
+{#    这里是内容#}
     <div class="container-fluid">
       <div class="row">
+
+      {#            左边栏#}
         <div id="side_bar_menu" class="col-sm-3 col-md-2 sidebar">
             {% block sidebar %}
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="http://v3.bootcss.com/examples/dashboard/#">xxxx<span class="sr-only">(current)</span></a></li>
-
+            <li class="active"><a href="#">哈哈哈<span class="sr-only">(current)</span></a></li>
           </ul>
             {% endblock %}
         </div>
+
+{#      右边栏#}
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             {% block content_panel %}
-          <h1 class="page-header">Dashboard</h1>
 
+
+          <h1 class="page-header">Dashboard</h1>
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-3 placeholder">
               <h4>Label</h4>
@@ -100,6 +92,7 @@
 
           <h2 class="sub-header">Section title</h2>
             {% endblock %}
+
         </div>
       </div>
     </div>
@@ -110,13 +103,17 @@
     <script src="/static/js/jquery-3.1.1.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
 
+{#    方便其他程序加载JS#}
     {% block bottom-js %}
     {% endblock %}
 
     <script type="text/javascript">
         $(document).ready(function () {
 
+{#            给导航栏加选择active#}
             $("#navbar_menu a[href='{{ request.path }}']").parent().addClass("active");
+
+{#            给左边栏加active#}
             $("#side_bar_menu a[href='{{ request.path }}']").parent().addClass("active");
 
         });//end doc ready

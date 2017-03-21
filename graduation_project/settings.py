@@ -29,7 +29,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
+#应用名字，新建的app要加进去
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,6 +50,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+#用户登录方式用hosts.UserProfile这个登陆，其实就是hosts下的auth_admin
 AUTH_USER_MODEL = 'hosts.UserProfile'
 
 ROOT_URLCONF = 'graduation_project.urls'
@@ -57,7 +59,7 @@ ROOT_URLCONF = 'graduation_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]   #这里的templates就是声明了用templates下的前端内容
         ,
         'APP_DIRS': True,
         'OPTIONS': {

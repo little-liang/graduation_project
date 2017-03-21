@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block sidebar%}
+
+{#    主机管理的左边栏显示内容#}
     <ul class="nav nav-sidebar">
     <li><a href="{% url 'host_mgr' %}">主机<span class="sr-only">(current)</span></a></li>
     <li><a href="{% url 'multi_cmd' %}">批量命令</a></li>
@@ -10,20 +12,20 @@
     </ul>
 {% endblock %}
 
+
 {% block content_panel %}
-
-
 {% endblock %}
+
 
 {% block bottom-js %}
     <script>
         $(document).ready(function () {
 
-            //这个界面是二级界面 自己带 active
+            //这个界面是二级界面 自己带 active,就是保证主机管理的二级界面高亮
             $("#navbar_menu a[href='"+ "{% url 'hosts' %}" +"']").parent().addClass("active");
             $("#host-group a").click(function () {
-                $(this).addClass("active")
-                $(this).siblings().removeClass("active")
+                $(this).addClass("active");  //点击的网页active状态
+                $(this).siblings().removeClass("active") //未点击的网页移除active状态
             });//end host-group a click
         });
     </script>

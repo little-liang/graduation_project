@@ -4,6 +4,8 @@
     <div class="col-md-3">
         <div class="panel panel-default panel-left">
             主机组
+
+{#            这里做了一个树形结构，可以支持组选择，分别选择，js不好弄啊#}
             <div class="panel-body">
                 <ul id="group-list" class="list-group">
 
@@ -15,14 +17,17 @@
                   {% for group in request.user.host_groups.select_related  %}
 
                      <li class="list-group-item borderless">
+
+{#                     点击旁边的选择框，触发 CheckAllToggle(this)函数，this是他自己，这是全选功能的函数#}
                      <input onclick="CheckAllToggle(this)" data="host-group" type="checkbox">
                        <a data="group" class="a-pointer">
                            {{ group.name }}
                          <span class="badge">{{ group.bindhosttouser_set.select_related.count }}</span>
                        </a>
-
+{#                     组的下面的主机#}
                      <ul class="list-group">
                        {% for h in group.bindhosttouser_set.select_related %}
+{#                                                                                    这里的属性自定义为data=bind-host 供下面选择框使用#}
                          <li class="list-group-item list-tree"><span>-- </span><input data="bind-host" type="checkbox" value="{{ h.id }}">{{ h.host.hostname }}</li>
                        {% endfor %}
                      </ul>
@@ -33,89 +38,126 @@
         </div>
     </div>
 
+{#    批量命令输入框#}
     <div class="col-md-9">
         <div class="panel panel-default panel-right">
             <div class="panel-body">
                 <textarea name="cmd" rows="3" placeholder="输入要执行的命令..."></textarea>
                 <hr/>
+{#                这个提交按钮触发提交任务函数 SubmitTask('mutli_cmd')"#}
                 <button type="button" class="btn btn-success col-lg-2 pull-right" onclick="SubmitTask('mutli_cmd')">执行命令</button>
-{#                输入命令为空或者没有选择主机#}
+{#                输入命令为空或者没有选择主机返回的出错信息#}
                 <div id="err-msgs"></div>
             </div>
         </div>
     </div>
 {% endblock %}
 
+{#js代码段开始了#}
 {% block bottom-js %}
     <script type="text/javascript">
         $(document).ready(function () {
-{#            与a同级的所有标签#}
+
             $("#group-list a[data='group']").click(function(){
+                {#            与a同级的所有标签 这里是nestAll.点击后隐藏起来#}
                 $(this).nextAll().toggleClass("hide");
 
-                $("input[data='host-group']")
+{#                $("input[data='host-group']")#}
             });
         });//end doc ready
 
+
+        //全选功能函数
         function CheckAllToggle(ele){
            if(ele.checked){//把下面的主机全部全选
-               ($(ele).next().next().children().children("input")).prop("checked", true); //attr prop 区别这个不行另一个行
+               ($(ele).next().next().children().children("input")).prop("checked", true); //attr prop 区别这个不行就用另一个
            }else{ //再点一下取消全选
                ($(ele).next().next().children().children("input")).prop("checked", false);
            }
         }
 
+
+        //提交批量命令处理函数
         function SubmitTask(task_type){
             if(task_type == "mutli_cmd"){
                 FormVerification(task_type);
             }
         }
 
+        //批量命令子函数
         function FormVerification(task_type){
             var err_list = [];
+            //初始化这个字典
             var data_list = {};
 
             if(task_type == "mutli_cmd"){
-                var selected_host = VerifyHostSelection();
+
+                //这步拿到被选择的主机
+                var selected_host = VerifyHostSelection();0
+
+                //把选择的主机列表放入字典中
                 data_list['selected_hosts'] = selected_host;
+
+                //把批量命令，及任务类型放入字典中
+                //这里把批量密令给去空格化了
                 var cmd_text = $.trim($("textarea[name='cmd']").val());
                 data_list['cmd'] = cmd_text;
                 data_list['task_type'] = task_type;
 
+                //没有选择主机的情况   扔到 err_list中
                 if(selected_host.length == 0) {
                     err_list.push(['验证失败', '未选择任何主机']);
                 }
+                //没有输入执行命令的情况   扔到 err_list中
                 if(cmd_text.length == 0) {
                     err_list.push(['验证失败', '未选输入要执行的命令']);
                 }
             }
 
 
+            //要是err_list长度大于0 就说明有错误信息了，直接返回给前台
             if(err_list.length>0){
+
+                //先清空错误信息
                 $("#err-msgs").html(" ");
+
+                //哥们又开始循环错误信息列表了
                 $.each(err_list, function (index, item) {
+
+                    //凑html内容
                     var err_msg = "<p style='color: red;'>" + index + ". " + item[1] + "</p>";
+
+                    //前台的err-msgs 返回出 错误信息
                     $("#err-msgs").append(err_msg);
 
                 });
             }else{
                 //提交任务
+                //因为POST 存在一个跨域访问 得把csrf的值给记下来，提交的时候才让提交
                 data_list["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
+
+                //ajax的post任务 话说callback是干啥的，回调函数？
                 $.post("{% url 'submit_task' %}", data_list, function(callback){
                     console.log(callback);
                 });
             }
         }
 
+{#        批量任务的子命令 验证主机选择#}
         function VerifyHostSelection(){
             var selected_hosts = [];
-            var all_hosts = $("input[data='bind-host']");
-            $.each(all_hosts, function(index, ele){
 
+            //找出所有显示的主机
+            var all_hosts = $("input[data='bind-host']");
+
+            //循环这些主机，
+            $.each(all_hosts, function(index, ele){
+                //如果被选择了就放入selected_hosts列表中
                 if(ele.checked){
                     selected_hosts.push($(ele).val());
                 }
             });
+            //把selected_hosts 甩出去
             return selected_hosts;
         }
     </script>

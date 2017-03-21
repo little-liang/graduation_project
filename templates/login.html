@@ -1,3 +1,4 @@
+{#登陆页直接用的bootstarp的，哈哈#}
 <!DOCTYPE html>
 <!-- saved from url=(0038)http://v3.bootcss.com/examples/signin/ -->
 <html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -24,7 +25,7 @@
   <body>
 
     <div class="container">
-
+{#        又是跨站保护 csrf#}
       <form class="form-signin" method="post" action="{% url 'login' %}">{% csrf_token %}
         <h2 class="form-signin-heading">Please sign in</h2>
         <label for="inputEmail" class="sr-only">Email address</label>
@@ -37,7 +38,9 @@
           </label>
         </div>
         <button class="btn btn-lg btn-success btn-block" type="submit">LOGIN</button>
-        <span style="color: red" class="">{{ login_err }}</span>
+
+          <!--验证失败，收到后台返回值#login_err是后台的字典，前端认为的json} -->
+        <span style="color: red">{{ login_err }}</span>
       </form>
 
 

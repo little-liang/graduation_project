@@ -23,6 +23,7 @@ def assets_index(request):
 def monitor_index(request):
     return render(request, 'monitor/dashboard.html')
 
+#登陆方法
 def acc_login(request):
     if request.method == 'GET':
         return render(request, 'login.html')
@@ -31,29 +32,29 @@ def acc_login(request):
         password = request.POST.get('password')
 
         user = authenticate(username=username, password=password)
+
+        #登陆固有方式
         if user is not None:
             login(request, user)
-
             return HttpResponseRedirect("/")
         else:
             login_err = 'Wrong username or password!'
-
+    #返回了错误信息给前台
     return render(request, 'login.html', {'login_err': login_err})
 
 @login_required()
 def acc_logout(request):
     logout(request)
-
     return HttpResponseRedirect("/")
 
 @login_required()
 def hosts_mgr(request):
-    #这里用的是?select_gid={{ group.id }}
+    #这里用的是host_mgr.html中的?select_gid={{ group.id }}
     select_gid = request.GET.get('select_gid')
 
     #如果这个host_groups 主机组表的id存在，注意这个查询的是host_groups的id
     if select_gid:
-        #这里查询的是BindHostToUser，这个与HostGroups有多对多关系，通过__可以查询多对多另一张表的id
+        #这里查询的是BindHostToUser，这个与HostGroups有多对多关系，通过(__id)可以查询多对多另一张表的id
         host_list = models.BindHostToUser.objects.filter(host_group__id=select_gid)
     else:
         #有一些用户直接与主机绑定，没有分组，可以弄成未分组
@@ -64,15 +65,12 @@ def hosts_mgr(request):
 def multi_cmd(request):
     return render(request, 'hosts/multi_cmd.html')
 
+#前台的批量命令处理的方法
 @login_required()
 def submit_task(request):
-    # print(request.POST)
-    # print(request.POST.get('cmd'))
-    # print(request.POST.get('task_type'))
-    # print(request.POST.getlist('selected_hosts'))
 
     #写个类专门处理这个事情
     tas_obj = task.Task(request)
     res = tas_obj.handle()
 
-    return HttpResponse("dddd")
+    return HttpResponse("ok了")

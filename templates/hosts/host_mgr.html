@@ -1,19 +1,26 @@
 {% extends 'hosts/dashboard.html' %}
 
+{#右边栏继承#}
 {% block content_panel %}
    <div class="col-md-3">
     主机组
         <div class="panel panel-default">
             <div class="panel-body">
                 <ul class="nav">
-                    <li class=""><a href="{% url 'host_mgr' %}?select_gid={{ group.id }}">未分组主机[{{ request.user.bind_hosts.select_related.count }}]</a></li>
+
+{#                    这个点击后有个超链接直接url会变成http://127.0.0.1:8000/hosts/host_mgr/?select_gid=2#}
+{#                    这里给初始化时增加一个未分组主机在上面，request.user 是http request的方法#}
+                    <li class=""><a href="{% url 'host_mgr' %}?select_gid=0">未分组主机[{{ request.user.bind_hosts.select_related.count }}]</a></li>
                     {% for group in request.user.host_groups.select_related %}
+{#                        这里的几个查询全都是跨表和跨一些表之类的 外键之类的，所以要熟悉一下#}
                         <li class=""><a href="{% url 'host_mgr' %}?select_gid={{ group.id }}">{{ group.name }}[{{ group.bindhosttouser_set.select_related.count }}]</a></li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
+
+{#    右边栏的主机列表#}
         <div class="col-md-9">
         主机列表
         <div class="panel panel-default">
@@ -42,8 +49,6 @@
                     </tr>
                     {% endfor %}
                 </table>
-
-
 
             </div>
         </div>
