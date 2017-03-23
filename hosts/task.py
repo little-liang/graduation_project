@@ -1,6 +1,8 @@
 
 from hosts import models
 from django.db import transaction
+import subprocess, time
+from graduation_project import settings
 class Task(object):
     def __init__(self, request):
         self.request = request
@@ -23,25 +25,25 @@ class Task(object):
     @transaction.atomic
     def mutli_cmd(self):
 
-        print("will run cmd")
-        # print(self.request.POST)
+        # print("把 操作 写入 数据库 ！")
+        # print(self.request.POST, '11111111111111')
         selected_hosts = self.request.POST.getlist("selected_hosts[]")
         cmd = self.request.POST.getlist("cmd")
 
-        #create task info
+        # create task info
         task_obj = models.TaskLog(
             task_type=self.task_type,
             user_id=self.request.user.id,
-            #many to many 必须创建完记录再添加
+            # many to many 必须创建完记录再添加
             cmd=cmd,
         )
         task_obj.save()
 
-        #selected_hosts 这个返回的是列表，所以要用 *selected_hosts
+        # selected_hosts 这个返回的是列表，所以要用 *selected_hosts
         task_obj.hosts.add(*selected_hosts) #添加 many to many 多对多关系
         # task_obj.hosts.add([1,2,3])
 
-        #为所有主机创建相关的任务记录
+        #为所有主机创建相关的任务记录,这里出现了task-id 区分任务的
         for bind_host_id in selected_hosts:
             obj = models.TaskLogDetail(
                 child_of_task_id=task_obj.id,
@@ -50,5 +52,36 @@ class Task(object):
             )
             obj.save()
 
+        # print("将要调用 后台脚本执行 ")
+        # 调用后台的脚本,这里在setting中配置脚本路径，防止修改,win 与 linux 不同
 
+        # print("ppppppppppppppppppp")
+        # print(settings.MultiTaskScripts)
+        # print(settings.MultiTaskRunType)
+        # print('-task_id', str(task_obj.id))
+        # print('-run_type', settings.MultiTaskRunType)
+        # print("qqqqqqqqqqqqqqqqqqqq")
+        p = subprocess.run([
+            'python',
+            settings.MultiTaskScripts,
+            '-task_id', str(task_obj.id),
+            '-run_type', settings.MultiTaskRunType,                 ##这里可以在前端定义，用什么调用，我们这里用settings中定义
+        ])
+
+        # print(task_obj)
         return {'task_id': task_obj.id}
+
+    #
+    def get_task_result(self):
+        task_id = self.request.GET.get('task_id')
+
+        if task_id:
+            res_list = models.TaskLogDetail.objects.filter(child_of_task=task_id)
+            return list(res_list.values('id',
+                                        'bind_host__host__hostname',
+                                        'bind_host__host__ip_addr',
+                                        'bind_host__host_user__username',
+                                        'date',
+                                        'event_log',
+                                        'result',
+                                        ))

@@ -60,4 +60,5 @@ admin.site.register(models.IDC)
 
 #批量命令记录及相关日志记录
 admin.site.register(models.TaskLog)
+
 admin.site.register(models.TaskLogDetail)

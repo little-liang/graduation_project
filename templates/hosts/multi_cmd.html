@@ -43,11 +43,14 @@
         <div class="panel panel-default panel-right">
             <div class="panel-body">
                 <textarea name="cmd" rows="3" placeholder="输入要执行的命令..."></textarea>
-                <hr/>
 {#                这个提交按钮触发提交任务函数 SubmitTask('mutli_cmd')"#}
                 <button type="button" class="btn btn-success col-lg-2 pull-right" onclick="SubmitTask('mutli_cmd')">执行命令</button>
 {#                输入命令为空或者没有选择主机返回的出错信息#}
                 <div id="err-msgs"></div>
+                <hr/>
+
+                <div id="result-box"></div>
+
             </div>
         </div>
     </div>
@@ -140,7 +143,13 @@
                 //ajax的post任务 话说callback是干啥的，回调函数？
                 $.post("{% url 'submit_task' %}", data_list, function(callback){
                     console.log(callback);
-                });
+
+                    //把执行结果放置在前台,根据task_id来分辨是哪一个任务
+                    task_id_obj = JSON.parse(callback);
+                    RefreshGetTaskResult(task_id_obj.task_id);
+
+
+                });//end post
             }
         }
 
@@ -161,5 +170,37 @@
             //把selected_hosts 甩出去
             return selected_hosts;
         }
+
+
+        function RefreshGetTaskResult(task_id) {
+
+            //先调用一次，让用户立刻看到结果，实际上没啥意义，就是让用户觉的任务提交了
+            GetTaskResult(task_id);
+
+            //每隔3秒去后台刷新数据，看看命令有没有执行成功
+            RefreshGetTaskResultInterval = setInterval(function () {
+                GetTaskResult(task_id);
+            }, 3000)
+            GetTaskResult(task_id);
+        }
+
+        function GetTaskResult(task_id) {
+            $.getJSON("{% url 'get_task_result' %}", {task_id:task_id}, function(callback){
+                console.log("---task-msgs---");
+                PrintOnPage(callback);
+                
+            }); // end getJSON
+        }
+        
+        function PrintOnPage(callback) {
+            $("#result-box").html(" ");
+            $.each(callback, function (index, item) {
+                //这里的pre标签是代表 原格式输出, 6的不行
+                var row_hmtl = "<p>" + item.bind_host__host__hostname + "(" + item.bind_host__host__ip_addr + ") --->" + item.bind_host__host_user__username + "------" + item.date + "------" + item.result + "</p>" +
+                                "<pre>" + item.event_log + "</pre>";
+                $("#result-box").append(row_hmtl);
+            })
+        }
+        
     </script>
 {% endblock %}

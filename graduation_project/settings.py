@@ -150,3 +150,8 @@ FileUploadDir = 'static/imgs/upload'
 
 #未登录时自动转入这个URL
 LOGIN_URL = '/login/'
+
+# 调用后台的脚本,这里在setting中配置脚本路径，防止修改,win 与 linux 不同
+MultiTaskScripts = "%s\\hosts\\backend\\multi_task.py" % (BASE_DIR)
+
+MultiTaskRunType = 'by_paramiko'

@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from hosts import models, task
+from hosts import models, task, utils
 import json
 # Create your views here.
 
@@ -75,3 +75,11 @@ def submit_task(request):
     res = tas_obj.handle()
 
     return HttpResponse(json.dumps(res))
+
+
+@login_required()
+def get_task_result(request):
+    task_obj = task.Task(request)
+    res = task_obj.get_task_result()
+    # 运行后，会出现一个datetime 类型，但是JS不认识，只能用特殊的格式转换，详情请见utils
+    return HttpResponse(json.dumps(res, default=utils.json_date_handler))
