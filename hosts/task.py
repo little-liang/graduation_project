@@ -22,7 +22,7 @@ class Task(object):
 
 
     #事务性操作 数据库要支持
-    @transaction.atomic
+    # @transaction.atomic()
     def mutli_cmd(self):
 
         # print("把 操作 写入 数据库 ！")
@@ -55,12 +55,6 @@ class Task(object):
         # print("将要调用 后台脚本执行 ")
         # 调用后台的脚本,这里在setting中配置脚本路径，防止修改,win 与 linux 不同
 
-        # print("ppppppppppppppppppp")
-        # print(settings.MultiTaskScripts)
-        # print(settings.MultiTaskRunType)
-        # print('-task_id', str(task_obj.id))
-        # print('-run_type', settings.MultiTaskRunType)
-        # print("qqqqqqqqqqqqqqqqqqqq")
         p = subprocess.run([
             'python',
             settings.MultiTaskScripts,
@@ -68,13 +62,11 @@ class Task(object):
             '-run_type', settings.MultiTaskRunType,                 ##这里可以在前端定义，用什么调用，我们这里用settings中定义
         ])
 
-        # print(task_obj)
+        # # print(task_obj)
         return {'task_id': task_obj.id}
 
-    #
     def get_task_result(self):
         task_id = self.request.GET.get('task_id')
-
         if task_id:
             res_list = models.TaskLogDetail.objects.filter(child_of_task=task_id)
             return list(res_list.values('id',

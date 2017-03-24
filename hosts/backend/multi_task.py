@@ -19,7 +19,7 @@ BaseDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # #这里要有用，必须加入Django的环境变量
 sys.path.append(BaseDir)
 
-print(BaseDir)
+# print(BaseDir)
 # #设置了系统级的环境变量
 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "graduation_project.settings")
@@ -37,16 +37,15 @@ from hosts.backend import paramiko_handle
 
 
 def by_paramiko(task_id):
-    print("后面的脚本 paramiko 开始了")
-    print(type(task_id))
+    # print("后面的脚本 paramiko 开始了")
     try:
         #这里只能抓到前一个task——id 不管用，不知道咋回事
         task_obj = TaskLog.objects.get(id=task_id)
-        print("你大爷！", task_obj)
-        print("zhelima")
+        # print("你大爷！", task_obj)
         pool = multiprocessing.Pool(processes=5)
 
-        print(task_obj.hosts.select_related())
+
+
         for h in task_obj.hosts.select_related():
             p = pool.apply_async(paramiko_handle.paramiko_ssh, args=(task_id, h, task_obj.cmd))
         pool.close()
