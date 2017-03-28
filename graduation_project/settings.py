@@ -145,7 +145,7 @@ STATICFILES_DIRS = (
 )
 
 # 上传文件目录
-FileUploadDir = 'static/imgs/upload'
+FileUploadDir = '%s/uploads' % (BASE_DIR)
 
 
 #未登录时自动转入这个URL

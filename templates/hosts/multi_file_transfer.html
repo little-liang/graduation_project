@@ -1,0 +1,85 @@
+{% extends 'hosts/dashboard.html' %}
+{% block head-css %}
+    <!--bootstrap select Css [ REQUIRED ]-->
+    <link href="/static/plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet">
+    <link href="/static/plugins/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/plugins/bootstrap-fileinput/css/fileinput.min.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
+{% endblock %}
+
+{% block content_panel %}
+    {% include 'hosts/host_list_component.html' %}
+{#    {% include 'hosts/task_exec_compontent.html' %}#}
+        <div class="col-md-9">
+            <div class="panel panel-default panel-right">
+                <div class="panel-body">
+
+                    <div>
+                        <select id="task_type" class="selectpicker">
+                            <option value="file_send">分发文件到客户端</option>
+                            <option value="file_get">从客户端下载文件</option>
+                        </select>
+{#                        前台文件名字#}
+                        <input id="file_upload" name="filename" type="file" multiple class="file-loading">
+
+                        <div class="form-group">
+                            <label for="exampleInputName2">远程文件路径</label>
+                            <input type="text" placeholder="必须输入绝对路径，不要包含文件名" class="form-control" name="remote_file_path" id="remote_file_path" >
+                        </div>
+
+                        <button type="button" class="btn btn-success col-lg-2 pull-right" onclick="SubmitTask('mutli_file_transfer')">执行任务</button>
+                    </div>
+
+
+
+{#                    输入命令为空或者没有选择主机返回的出错信息#}
+                    <div id="err-msgs"></div>
+
+
+                    <div id="result-box"></div>
+
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}
+
+{% block bottom-js %}
+    {% include 'hosts/multi_task_js_componet.html' %}
+    <script src="/static/plugins/bootstrap-fileinput/js/fileinput.js"></script>
+	<script src="/static/plugins/bootstrap-fileinput/js/plugins/canvas-to-blob.js"></script>
+	<script src="/static/plugins/bootstrap-fileinput/js/fileinput_locale_zh.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+           upload_files = [];
+           $("#file_upload").fileinput({
+               //上传文件动作路径
+            uploadUrl: "{% url 'file_upload' %}", // server upload action
+            uploadAsync: true,
+            language:'zh',
+            maxFileSize:2000,
+            maxFileCount: 5,
+        });
+        $("#file_upload").on('fileuploaded', function(event, data, previewId, index) {
+            var form = data.form, files = data.files, extra = data.extra,
+                response = data.response, reader = data.reader;
+                console.log(response);
+                upload_files.push(response, uploaded_file_path);
+        });
+
+        $("#task_type").on("change",function(){
+            if (this.value == 'file_send'){
+                $(".file-input").removeClass("hide");
+
+                $("#file-download-to-local").addClass("hide");
+            }else{
+                $(".file-input").addClass("hide");
+                $("#file-download-to-local").removeClass("hide");
+            }
+        });//end on change
+
+    });
+
+    </script>
+{% endblock %}

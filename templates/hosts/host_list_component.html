@@ -1,0 +1,36 @@
+<div class="col-md-3">
+    <div class="panel panel-default panel-left">
+        主机组
+
+{#            这里做了一个树形结构，可以支持组选择，分别选择，js不好弄啊#}
+        <div class="panel-body">
+            <ul id="group-list" class="list-group">
+
+              <li class="list-group-item borderless">
+                <span class="badge">{{ request.user.bind_hosts.select_related.count }}</span>
+                未分组主机
+              </li>
+
+              {% for group in request.user.host_groups.select_related  %}
+
+                 <li class="list-group-item borderless">
+
+{#                     点击旁边的选择框，触发 CheckAllToggle(this)函数，this是他自己，这是全选功能的函数#}
+                 <input onclick="CheckAllToggle(this)" data="host-group" type="checkbox">
+                   <a data="group" class="a-pointer">
+                       {{ group.name }}
+                     <span class="badge">{{ group.bindhosttouser_set.select_related.count }}</span>
+                   </a>
+{#                     组的下面的主机#}
+                 <ul class="list-group">
+                   {% for h in group.bindhosttouser_set.select_related %}
+{#                                                                                    这里的属性自定义为data=bind-host 供下面选择框使用#}
+                     <li class="list-group-item list-tree"><span>-- </span><input data="bind-host" type="checkbox" value="{{ h.id }}">{{ h.host.hostname }}</li>
+                   {% endfor %}
+                 </ul>
+                </li>
+              {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

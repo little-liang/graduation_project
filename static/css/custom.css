@@ -37,3 +37,11 @@
 hr{
     margin-top: 40px;
 }
+
+/*.selectpicker{*/
+    /*width: 20%;*/
+/*}*/
+.pad-ver {
+    padding-top:10px;
+    padding-bottom:50px
+}

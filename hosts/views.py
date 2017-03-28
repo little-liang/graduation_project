@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from hosts import models, task, utils
 import json
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
@@ -84,3 +85,17 @@ def get_task_result(request):
     print("前台去结果", res)
     # 运行后，会出现一个datetime 类型，但是JS不认识，只能用特殊的格式转换，详情请见utils
     return HttpResponse(json.dumps(res, default=utils.json_date_handler))
+
+@login_required()
+def multi_file_transfer(request):
+    return render(request, 'hosts/multi_file_transfer.html')
+
+@login_required
+@csrf_exempt
+def file_upload(request):
+    #前台有文件名 name就是这个，这里会有一个csrf验证
+    file_name = request.FILES['filename']
+    print("--->", request.POST)
+    file_path = utils.handle_upload_file(request, file_name)
+    print(file_path)
+    return HttpResponse(json.dumps({'uploaded_file_path': file_path}))

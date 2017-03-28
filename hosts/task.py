@@ -1,4 +1,3 @@
-
 from hosts import models
 from django.db import transaction
 import subprocess, time
@@ -64,6 +63,10 @@ class Task(object):
 
         # # print(task_obj)
         return {'task_id': task_obj.id}
+
+    def mutli_file_transfer(self):
+        print("going to upload/download")
+
 
     def get_task_result(self):
         task_id = self.request.GET.get('task_id')

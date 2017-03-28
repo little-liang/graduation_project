@@ -1,0 +1,161 @@
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#group-list a[data='group']").click(function(){
+                {#            与a同级的所有标签 这里是nestAll.点击后隐藏起来#}
+                $(this).nextAll().toggleClass("hide");
+
+{#                $("input[data='host-group']")#}
+            });
+        });//end doc ready
+
+
+        //全选功能函数
+        function CheckAllToggle(ele){
+           if(ele.checked){//把下面的主机全部全选
+               ($(ele).next().next().children().children("input")).prop("checked", true); //attr prop 区别这个不行就用另一个
+           }else{ //再点一下取消全选
+               ($(ele).next().next().children().children("input")).prop("checked", false);
+           }
+        }
+
+
+        //提交批量命令处理函数
+        function SubmitTask(task_type){
+            FormVerification(task_type);
+        }
+
+        //批量命令子函数
+        function FormVerification(task_type){
+            var err_list = [];
+            var data_list = {}; //初始化这个字典，放用户选择的主机，和其他参数
+            var selected_host = VerifyHostSelection();   //这步拿到被选择的主机
+            data_list['selected_hosts'] = selected_host; //把选择的主机列表放入字典中
+            data_list['task_type'] = task_type;
+            //没有选择主机的情况   扔到 err_list中
+            if(selected_host.length == 0) {
+                err_list.push(['验证失败', '未选择任何主机']);
+            }
+
+            if(task_type == "mutli_cmd"){
+
+                //把批量命令，及任务类型放入字典中
+                //这里把批量密令给去空格化了
+                var cmd_text = $.trim($("textarea[name='cmd']").val());
+                data_list['cmd'] = cmd_text;
+                data_list['task_type'] = task_type;
+
+
+                //没有输入执行命令的情况   扔到 err_list中
+                if(cmd_text.length == 0) {
+                    err_list.push(['验证失败', '未选输入要执行的命令']);
+                }
+            }else if(task_type == 'mutli_file_transfer'){ //上传文件时的操作
+                var remote_path_val = $.trim($("#remote_file_path").val());
+                data_list['remote_path'] = remote_path_val; //上传文件路径
+                if (remote_path_val.length == 0){//远程主机路径为空
+                    err_list.push(['验证失败', '为输入远程主机路径']);
+                }
+
+                //验证 是 上传文件 还是 下载文件
+                var task_action = $("#task_type").val();
+                data_list['file_transfer_type'] = task_action; //告诉后台你是上传还是下载
+
+                if (task_action == 'file_send'){
+                    if(upload_files.length == 0){
+                        err_list.push(['验证失败', '还没有任何文件上传到中专站'])
+                    }
+
+                    //把上传的文件名字，放到字典里
+
+                    data_list['upload_files'] = upload_files;
+                }
+            }
+
+
+            //要是err_list长度大于0 就说明有错误信息了，直接返回给前台
+            if(err_list.length>0){
+
+                //先清空错误信息
+                $("#err-msgs").html(" ");
+
+                //哥们又开始循环错误信息列表了
+                $.each(err_list, function (index, item) {
+
+                    //凑html内容
+                    var err_msg = "<p style='color: red;'>" + index + ". " + item[1] + "</p>";
+
+                    //前台的err-msgs 返回出 错误信息
+                    $("#err-msgs").append(err_msg);
+
+                });
+            }else{
+                //提交任务
+                $("#err-msgs").html(" ");
+                //因为POST 存在一个跨域访问 得把csrf的值给记下来，提交的时候才让提交
+                data_list["csrfmiddlewaretoken"] = $("input[name='csrfmiddlewaretoken']").val();
+
+                //ajax的post任务 话说callback是干啥的，回调函数？
+                $.post("{% url 'submit_task' %}", data_list, function(callback){
+                    console.log(callback);
+
+                    //把执行结果放置在前台,根据task_id来分辨是哪一个任务
+                    task_id_obj = JSON.parse(callback);
+                    RefreshGetTaskResult(task_id_obj.task_id);
+
+
+                });//end post
+            }
+        }
+
+{#        批量任务的子命令 验证主机选择#}
+        function VerifyHostSelection(){
+            var selected_hosts = [];
+
+            //找出所有显示的主机
+            var all_hosts = $("input[data='bind-host']");
+
+            //循环这些主机，
+            $.each(all_hosts, function(index, ele){
+                //如果被选择了就放入selected_hosts列表中
+                if(ele.checked){
+                    selected_hosts.push($(ele).val());
+                }
+            });
+            //把selected_hosts 甩出去
+            return selected_hosts;
+        }
+
+
+        function RefreshGetTaskResult(task_id) {
+
+            //先调用一次，让用户立刻看到结果，实际上没啥意义，就是让用户觉的任务提交了
+            console.log("ppppppp")
+            GetTaskResult(task_id);
+
+            //每隔3秒去后台刷新数据，看看命令有没有执行成功
+            RefreshGetTaskResultInterval = setInterval(function () {
+                GetTaskResult(task_id);
+            }, 3000)
+            GetTaskResult(task_id);
+        }
+
+        function GetTaskResult(task_id) {
+            $.getJSON("{% url 'get_task_result' %}", {task_id:task_id}, function(callback){
+                console.log("---task-msgs---");
+                PrintOnPage(callback);
+
+            }); // end getJSON
+        }
+
+        function PrintOnPage(callback) {
+            $("#result-box").html(" ");
+            $.each(callback, function (index, item) {
+                //这里的pre标签是代表 原格式输出, 6的不行
+                var row_hmtl = "<p>" + item.bind_host__host__hostname + "(" + item.bind_host__host__ip_addr + ") --->" + item.bind_host__host_user__username + "------" + item.date + "------" + item.result + "</p>" +
+                                "<pre>" + item.event_log + "</pre>";
+                $("#result-box").append(row_hmtl);
+            })
+        }
+
+    </script>
