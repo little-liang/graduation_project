@@ -1,7 +1,52 @@
 import time
-import paramiko
+import paramiko, json
 from hosts import models
 from django.utils import timezone
+from graduation_project import settings
+
+
+def paramiko_sftp(task_id, host_obj, task_content, task_type, user_id):
+    bind_host = host_obj
+    print("运行我了!!SFTP")
+    try:
+        t = paramiko.Transport((bind_host.host.ip_addr, int(bind_host.host.port)))
+        if bind_host.host_user.auth_type == 'ssh_password':
+            t.connect(username=bind_host.host_user.username, password=bind_host.host_user.password)
+        else:
+            pass
+        '''
+        key = paramiko.RSAKey.from_private_key_file(settings.RSA_PRIVATE_KEY_FILE)
+        .connect(username=bind_host.host_user, password=bind_host.host_user.password)
+        '''
+        sftp = paramiko.SFTPClient.from_transport(t)
+        task_dic = json.loads(task_content)
+        print(task_type)
+        if task_type == 'file_send':
+            upload_files = task_dic['upload_files']
+
+            # 这边上传路径又问题
+            for file_path in upload_files:
+                file_abs_path = "%s/1%s" % (settings.FileUploadDir, upload_files)
+                print('源文件绝对路径', file_abs_path)
+                file_abs_path = "%s" % (settings.FileUploadDir)
+                print('源文件绝对路径', file_abs_path)
+
+                remote_filename = file_path.split("/")[-1]
+                print('目标文件名字', remote_filename)
+
+                # print("sending [%s] to [%s]" % (remote_filename, task_dic['remote_path']))
+
+                # '''E:\graduation_project\uploads\1hs2axof8yl'''
+                sftp.put("E:\\graduation_project\\uploads\\1z8cqubje3g\\ffff.jpg", "/tmp")
+                # sftp.put(file_abs_path, "%s/%s" % (task_dic['remote_path'], remote_filename))
+
+
+        else:
+            pass
+    except Exception as e:
+        print(e)
+
+
 def paramiko_ssh(task_id, host_obj, task_content):
     bind_host = host_obj
 

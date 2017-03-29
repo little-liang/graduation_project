@@ -61,11 +61,13 @@
             maxFileSize:2000,
             maxFileCount: 5,
         });
+
+           //妈的这个 response 啥意思
         $("#file_upload").on('fileuploaded', function(event, data, previewId, index) {
             var form = data.form, files = data.files, extra = data.extra,
                 response = data.response, reader = data.reader;
                 console.log(response);
-                upload_files.push(response, uploaded_file_path);
+                upload_files.push(response.uploaded_file_path);
         });
 
         $("#task_type").on("change",function(){

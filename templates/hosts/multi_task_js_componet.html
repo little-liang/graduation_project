@@ -101,6 +101,7 @@
 
                     //把执行结果放置在前台,根据task_id来分辨是哪一个任务
                     task_id_obj = JSON.parse(callback);
+                    console.log(task_id_obj);
                     RefreshGetTaskResult(task_id_obj.task_id);
 
 
@@ -136,7 +137,7 @@
             //每隔3秒去后台刷新数据，看看命令有没有执行成功
             RefreshGetTaskResultInterval = setInterval(function () {
                 GetTaskResult(task_id);
-            }, 3000)
+            }, 3000);
             GetTaskResult(task_id);
         }
 

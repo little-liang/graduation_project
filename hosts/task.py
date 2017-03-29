@@ -1,6 +1,6 @@
 from hosts import models
 from django.db import transaction
-import subprocess, time
+import subprocess, time, json
 from graduation_project import settings
 class Task(object):
     def __init__(self, request):
@@ -66,7 +66,43 @@ class Task(object):
 
     def mutli_file_transfer(self):
         print("going to upload/download")
+        selected_hosts = set(self.request.POST.getlist("selected_hosts[]"))
+        transfer_type = self.request.POST.get("file_transfer_type")
+        remote_path = self.request.POST.get("remote_path")
+        upload_files = self.request.POST.getlist("upload_files[]")
 
+        #任务详情
+        data_dic = {
+            'remote_path': remote_path,
+            'upload_files': upload_files,
+        }
+
+        task_obj = models.TaskLog(
+            task_type=transfer_type,
+            user_id=self.request.user.id,
+            # many to many 必须创建完记录再添加
+            cmd=json.dumps(data_dic)
+        )
+        task_obj.save()
+        task_obj.hosts.add(*selected_hosts)
+
+        for bind_host_id in selected_hosts:
+            obj = models.TaskLogDetail(
+                child_of_task_id=task_obj.id,
+                bind_host_id=bind_host_id,
+                event_log="N/A",
+            )
+            obj.save()
+
+        p = subprocess.run([
+            'python',
+            settings.MultiTaskScripts,
+            '-task_id', str(task_obj.id),
+            '-run_type', settings.MultiTaskRunType,                 ##这里可以在前端定义，用什么调用，我们这里用settings中定义
+        ])
+
+        # # print(task_obj)
+        return {'task_id': task_obj.id}
 
     def get_task_result(self):
         task_id = self.request.GET.get('task_id')

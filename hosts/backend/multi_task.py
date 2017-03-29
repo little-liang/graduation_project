@@ -41,16 +41,19 @@ def by_paramiko(task_id):
     try:
         #这里只能抓到前一个task——id 不管用，不知道咋回事
         task_obj = TaskLog.objects.get(id=task_id)
-        # print("你大爷！", task_obj)
         pool = multiprocessing.Pool(processes=5)
 
-
-
-        for h in task_obj.hosts.select_related():
-            p = pool.apply_async(paramiko_handle.paramiko_ssh, args=(task_id, h, task_obj.cmd))
-        pool.close()
-        pool.join()
-
+        print(task_obj.task_type)
+        if task_obj.task_type == 'mutli_cmd':
+            for h in task_obj.hosts.select_related():
+                p = pool.apply_async(paramiko_handle.paramiko_ssh, args=(task_id, h, task_obj.cmd))
+            pool.close()
+            pool.join()
+        elif task_obj.task_type in ('file_send', 'file_get'):
+            for h in task_obj.hosts.select_related():
+                p = pool.apply_async(paramiko_handle.paramiko_sftp, args=(task_id, h, task_obj.cmd, task_obj.task_type, task_obj.user_id))
+            pool.close()
+            pool.join()
 
     except ObjectDoesNotExist as e:
         print("唉！！！！！！！！！")

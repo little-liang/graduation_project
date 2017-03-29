@@ -82,7 +82,7 @@ def submit_task(request):
 def get_task_result(request):
     task_obj = task.Task(request)
     res = task_obj.get_task_result()
-    print("前台去结果", res)
+    # print("前台去结果", res)
     # 运行后，会出现一个datetime 类型，但是JS不认识，只能用特殊的格式转换，详情请见utils
     return HttpResponse(json.dumps(res, default=utils.json_date_handler))
 
