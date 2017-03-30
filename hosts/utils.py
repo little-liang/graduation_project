@@ -10,7 +10,7 @@ def handle_upload_file(request, file_obj):
     random_dir = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba1234567890', 10))
     upload_dir = '%s/%s' % (settings.FileUploadDir, request.user.id)
 
-    upload_dir2 = '%s%s' % (upload_dir, random_dir)
+    upload_dir2 = '%s/%s' % (upload_dir, random_dir)
 
     #这里的目录必须依次创建1
     if not os.path.isdir(upload_dir):
@@ -25,4 +25,4 @@ def handle_upload_file(request, file_obj):
         for chunk in file_obj.chunks():
             destination.write(chunk)
 
-    return "%s%s" % (random_dir, file_obj.name)
+    return "%s/%s" % (random_dir, file_obj.name)

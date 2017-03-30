@@ -43,7 +43,7 @@ def by_paramiko(task_id):
         task_obj = TaskLog.objects.get(id=task_id)
         pool = multiprocessing.Pool(processes=5)
 
-        print(task_obj.task_type)
+        print(task_obj)
         if task_obj.task_type == 'mutli_cmd':
             for h in task_obj.hosts.select_related():
                 p = pool.apply_async(paramiko_handle.paramiko_ssh, args=(task_id, h, task_obj.cmd))
@@ -51,7 +51,9 @@ def by_paramiko(task_id):
             pool.join()
         elif task_obj.task_type in ('file_send', 'file_get'):
             for h in task_obj.hosts.select_related():
-                p = pool.apply_async(paramiko_handle.paramiko_sftp, args=(task_id, h, task_obj.cmd, task_obj.task_type, task_obj.user_id))
+
+                p = pool.apply_async(paramiko_handle.paramiko_sftp, args=(task_id, h, task_obj.cmd, task_obj.task_type,
+                                                                          task_obj.user_id))
             pool.close()
             pool.join()
 
