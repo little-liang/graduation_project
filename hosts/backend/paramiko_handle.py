@@ -33,10 +33,22 @@ def paramiko_sftp(task_id, host_obj, task_content, task_type, user_id):
                 # print('目标文件名字', remote_filename)
 
                 sftp.put(file_abs_path, remote_filename)
+
+            cmd_result = "success send files [%s] to remote path [%s]" % (file_abs_path, remote_filename)
+            result = 'success'
+
+
         else:
             pass
     except Exception as e:
-        print(e)
+        cmd_result = e
+        result = 'failed'
+
+    log_obj = models.TaskLogDetail.objects.get(child_of_task_id=task_id, bind_host_id=bind_host.id)
+    log_obj.event_log = cmd_result
+    log_obj.date = timezone.now()
+    log_obj.result = result
+    log_obj.save()
 
 
 def paramiko_ssh(task_id, host_obj, task_content):
